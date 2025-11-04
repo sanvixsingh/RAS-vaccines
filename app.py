@@ -23,57 +23,33 @@ def close_connection(exception):
 
 
 def init_db():
-    with app.app_context():
-        db = get_db()
-        cursor = db.cursor()
-
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                email TEXT UNIQUE,
-                password TEXT
-            )
-        """)
-
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS vaccines (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT UNIQUE,
-                stock INTEGER
-            )
-        """)
-
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS bookings (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER,
-                vaccine TEXT,
-                date TEXT,
-                status TEXT DEFAULT 'pending',
-                FOREIGN KEY(user_id) REFERENCES users(id)
-            )
-        """)
-
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS requests (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                user_id INTEGER,
-                vaccine_name TEXT,
-                status TEXT DEFAULT 'pending',
-                FOREIGN KEY(user_id) REFERENCES users(id)
-            )
-        """)
-
-        # Default vaccines
-        cursor.execute(
-            "INSERT OR IGNORE INTO vaccines(name, stock) VALUES ('Covishield', 10)")
-        cursor.execute(
-            "INSERT OR IGNORE INTO vaccines(name, stock) VALUES ('Covaxin', 10)")
-        cursor.execute(
-            "INSERT OR IGNORE INTO vaccines(name, stock) VALUES ('Sputnik V', 5)")
-
-        db.commit()
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT,
+        email TEXT UNIQUE,
+        password TEXT
+    )''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS vaccines(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT UNIQUE,
+        stock INTEGER
+    )''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS bookings(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        vaccine TEXT,
+        date TEXT,
+        status TEXT
+    )''')
+    cursor.execute('''CREATE TABLE IF NOT EXISTS requests(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        user_id INTEGER,
+        vaccine_name TEXT,
+        status TEXT
+    )''')
+    db.commit()
 
 
 # ---------------- ROUTES ----------------
@@ -270,6 +246,8 @@ def logout():
     session.clear()
     return redirect('/')
 
+
+init_db()
 
 if __name__ == '__main__':
     init_db()
