@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-4 text-center text-success">Welcome, {{ name }}</h2>
+
+<div class="card shadow p-4 mb-4">
+    <h4 class="text-primary mb-3">Book Vaccination Slot</h4>
+    <form method="POST">
+        <div class="mb-3">
+            <label>Vaccine Name</label>
+            <select name="vaccine" class="form-control">
+                {% for v in vaccines %}
+                {% if v[2] > 0 %}
+                <option value="{{ v[1] }}">{{ v[1] }} ({{ v[2] }} left)</option>
+                {% else %}
+                <option disabled>{{ v[1] }} - Not Available</option>
+                {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label>Date</label>
+            <input type="date" name="date" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success">Book Slot</button>
+    </form>
+</div>
+
+<div class="card shadow p-4 mb-4">
+    <h4 class="text-primary mb-3">Request a Vaccine</h4>
+    <form method="POST">
+        <input type="text" name="request_vaccine" class="form-control mb-3" placeholder="Enter vaccine name" required>
+        <button type="submit" class="btn btn-outline-primary">Send Request</button>
+    </form>
+
+    <h5 class="mt-4">Your Requests</h5>
+    <ul>
+        {% for r in requests_data %}
+        <li>{{ r[0] }} - {{ r[1] }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="card shadow p-4">
+    <h4 class="text-primary mb-3">Your Bookings</h4>
+    {% if bookings %}
+    <table class="table table-bordered text-center">
+        <tr>
+            <th>Vaccine</th>
+            <th>Date</th>
+            <th>Status</th>
+        </tr>
+        {% for b in bookings %}
+        <tr>
+            <td>{{ b[1] }}</td>
+            <td>{{ b[2] }}</td>
+            <td>{{ b[3] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <p>No bookings yet.</p>
+    {% endif %}
+</div>
+
+<div class="text-center mt-4">
+    <a href="/logout" class="btn btn-outline-danger">Logout</a>
+</div>
+{% endblock %}

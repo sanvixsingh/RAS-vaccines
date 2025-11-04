@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1 class="text-center text-danger fw-bold mb-4">Admin Dashboard</h1>
+
+<!-- ======= Add New Vaccine Section ======= -->
+<div class="card shadow p-4 mb-5">
+    <h4 class="text-primary mb-3">➕ Add or Update Vaccine</h4>
+    <form method="POST" class="row g-3">
+        <div class="col-md-5">
+            <input type="text" name="new_vaccine" class="form-control" placeholder="Vaccine Name" required>
+        </div>
+        <div class="col-md-3">
+            <input type="number" name="new_stock" class="form-control" placeholder="Stock Count" min="1" required>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Add / Update</button>
+        </div>
+    </form>
+</div>
+
+<!-- ======= Vaccine Stock Section ======= -->
+<div class="card shadow p-4 mb-5">
+    <h4 class="text-primary mb-3">📦 Vaccine Stocks</h4>
+    <table class="table table-bordered text-center align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Vaccine</th>
+                <th>Stock</th>
+                <th>Restock</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in vaccines %}
+            <tr>
+                <td>{{ v[1] }}</td>
+                <td {% if v[2] <=0 %} style="color:red; font-weight:bold" {% elif v[2] < 5 %}
+                    style="color:orange; font-weight:bold" {% endif %}>
+                    {{ v[2] }}
+                </td>
+                <td>
+                    <form method="POST" class="d-flex justify-content-center align-items-center">
+                        <input type="hidden" name="restock_id" value="{{ v[1] }}">
+                        <input type="number" name="restock_amount" min="1" class="form-control me-2" style="width:90px;"
+                            placeholder="Qty" required>
+                        <button type="submit" class="btn btn-success btn-sm">Add</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ======= Bookings Section ======= -->
+<div class="card shadow p-4 mb-5">
+    <h4 class="text-primary mb-3">📋 User Bookings</h4>
+    {% if bookings %}
+    <table class="table table-hover text-center align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Vaccine</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in bookings %}
+            <tr>
+                <td>{{ b[1] }}</td>
+                <td>{{ b[2] }}</td>
+                <td>{{ b[3] }}</td>
+                <td>{{ b[4] }}</td>
+                <td>
+                    {% if b[5] == 'done' %}
+                    <span class="badge bg-success">Done</span>
+                    {% else %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" style="display:inline;">
+                        <button name="done_id" value="{{ b[0] }}" class="btn btn-success btn-sm">Mark Done</button>
+                    </form>
+                    <form method="POST" style="display:inline;">
+                        <button name="delete_id" value="{{ b[0] }}" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-center text-muted">No bookings found.</p>
+    {% endif %}
+</div>
+
+<!-- ======= Requests Section ======= -->
+<div class="card shadow p-4 mb-4">
+    <h4 class="text-primary mb-3">💬 User Vaccine Requests</h4>
+    {% if requests_data %}
+    <table class="table table-bordered text-center align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>User</th>
+                <th>Requested Vaccine</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in requests_data %}
+            <tr>
+                <td>{{ r[1] }}</td>
+                <td>{{ r[2] }}</td>
+                <td>
+                    {% if r[3] == 'available now' %}
+                    <span class="badge bg-success">Available Now ✅</span>
+                    {% else %}
+                    <span class="badge bg-warning text-dark">Pending</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form method="POST" style="display:inline;">
+                        <button name="delete_request" value="{{ r[0] }}" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="text-center text-muted">No vaccine requests yet.</p>
+    {% endif %}
+</div>
+
+<!-- ======= Logout ======= -->
+<div class="text-center mt-4">
+    <a href="/logout" class="btn btn-outline-danger">Logout</a>
+</div>
+
+{% endblock %}
